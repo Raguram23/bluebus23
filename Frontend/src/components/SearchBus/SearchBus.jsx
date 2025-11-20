@@ -7,11 +7,10 @@ import { useSelector } from 'react-redux';
 
 const token = localStorage.getItem("token");
 
+// Use local backend during development
 const api = axios.create({
-  baseURL: 'https://safar-bus-booking-system.onrender.com',
-  headers: {
-    'x-access-token': token,
-  },
+  baseURL: 'http://localhost:8080',
+  headers: token ? { 'x-access-token': token } : {},
 });
 
 function BusResultsPage() {

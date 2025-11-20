@@ -18,13 +18,10 @@ const Layout = () => {
       setIsAdmin(true);
     }
   });
-  if (isAdmin) {
-    return <PageNotFound />;
-  }
   return (
     <div>
       <Header />
-      <Outlet />  {/* This will render nested routes if role is admin */}
+      <Outlet />
       <Footer />
     </div>
   );

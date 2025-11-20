@@ -221,7 +221,7 @@ export default function Contact() {
                                     />
                                 </svg>
                                 <div className="ml-4 text-md tracking-wide font-semibold">
-                                    +91 8984553247
+                                    +91 9876543210
                                 </div>
                             </div>
 

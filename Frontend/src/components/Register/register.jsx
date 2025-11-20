@@ -16,17 +16,13 @@ export default function Register() {
     number: '',
     password: '',
   });
-  const [otp, setOtp] = useState('');
-  const [generatedOtp, setGeneratedOtp] = useState(''); // State to store generated OTP
-  const [otpSent, setOtpSent] = useState(false); // State to track OTP sent status
-  const [otpVerified, setOtpVerified] = useState(false); // State to track OTP verification
   const [validationErrors, setValidationErrors] = useState({
     name: '',
     email: '',
     number: '',
     password: '',
   });
-const[errormessage,seterrormessage]=useState()
+// removed OTP email flow; direct registration will be used
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -67,79 +63,51 @@ const[errormessage,seterrormessage]=useState()
     return Object.keys(errors).length === 0;
   };
 
-  // OTP generation function
-  const generateOtp = () => {
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedOtp(otp);
-    return otp;
-  };
-
-  // Function to send OTP after successful registration
-  const sendOtp = async (email) => {
-    const otp = generateOtp();
-    try {
-      // Assuming your backend endpoint for sending OTP is /send-otp
-   const text=  `Dear ${register.name},
-
-Thank you for registering with Safar. To complete your account verification, please use the following One-Time Password (OTP):
-
-Your OTP: ${otp}
-
-This OTP is valid for the next 10 min. Please enter it on the verification page to confirm your email address and activate your account.
-
-If you did not request this, please ignore this email.
-
-Thank you for choosing Safar. We're excited to have you with us!
-
-Best regards,
-Safar customer Support 
-`
-      await axios.post('https://safar-bus-booking-system.onrender.com/sendGmail', { text:text,gmail:email,Subject:'Your OTP for Email Verification' });
-      setOtpSent(true);
-      setAlert({ message: 'OTP sent to your email. Please verify.', type: 'success', countdown: 5 });
-    } catch (error) {
-      setAlert({ message: 'Failed to send OTP', type: 'error', countdown: 5 });
-    }
-  };
-
-  // Handle Registration and send OTP
+  // OTP generation removed — direct registration used instead
+  // Handle Registration (direct, without OTP)
   const handleRegSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     try {
-     
-      sendOtp(register.email);
-      
+      // Register user on backend
+      const registerResp = await axios.post('http://localhost:8080/register', register);
+      setAlert({ message: registerResp.data.Message || 'Registration successful', type: 'success', countdown: 5 });
 
-    } catch (error) {
-      if(error.response){
-      
-     seterrormessage(error.response.data)
+      // Auto-login after successful registration
+      try {
+        const loginResp = await axios.post('http://localhost:8080/login', {
+          email: register.email,
+          password: register.password,
+        });
+        const token = loginResp.data.AccessToken;
+        const loginUser = loginResp.data.name;
+        const role = loginResp.data.userType;
+        const userId = loginResp.data.userId;
+        const Gmail = loginResp.data.email;
+
+        localStorage.setItem('username', loginUser);
+        localStorage.setItem('role', role);
+        localStorage.setItem('token', token);
+        localStorage.setItem('ID', userId);
+        localStorage.setItem('Gmail', Gmail);
+
+        dispatch(login(loginUser));
+
+        if (role === 'ADMIN') {
+          navigate('/admin');
+        } else {
+          navigate('/');
+        }
+      } catch (loginErr) {
+        // If auto-login fails, just navigate to login or show message
+        setAlert({ message: 'Registered but auto-login failed. Please login manually.', type: 'error', countdown: 5 });
       }
-      setAlert({ message:errormessage.Message, type: 'error', countdown:5 });
-   
-        // setCountdown(0)
-      
-     
-    }
-  };
-
-  // Handle OTP submission and verification
-  const handleOtpSubmit = async (e) => {
-    e.preventDefault();
-    if (otp === generatedOtp) {
-      setOtpVerified(true);
-      const response = await axios.post('https://safar-bus-booking-system.onrender.com/register', register);
-      setAlert({ message: response.data.Message, type: 'success', countdown: 5 });
-      setAlert({ message: 'Registration Done Successfully !', type: 'success', countdown: 5 });
-      setTimeout(() => {
-        navigate('/');
-      }, 5000)
-     
-    } else {
-      setAlert({ message: 'Invalid OTP. Please try again.', type: 'error', countdown: 5 });
+    } catch (error) {
+      let msg = 'Registration failed';
+      if (error?.response?.data?.Message) msg = error.response.data.Message;
+      setAlert({ message: msg, type: 'error', countdown: 5 });
     }
   };
 
@@ -159,7 +127,7 @@ Safar customer Support
     }
 
     try {
-      const response = await axios.post('https://safar-bus-booking-system.onrender.com/login', {
+      const response = await axios.post('http://localhost:8080/login', {
         email: loginEmail,
         password: loginPassword,
       });
@@ -295,7 +263,7 @@ Safar customer Support
                 </a>
               </p>
             </form>
-          ) : !otpSent ? (
+          ) : (
             <form className="space-y-6" onSubmit={handleRegSubmit}>
               <h2 className="text-3xl font-extrabold text-center mb-4 text-blue-800">Register</h2>
               <input
@@ -343,25 +311,6 @@ Safar customer Support
                 className="w-full py-3 text-lg font-semibold text-white bg-blue-800 rounded-lg shadow-md hover:bg-blue-900 transition-colors"
               >
                 REGISTER
-              </button>
-            </form>
-          ) : (
-            <form className="space-y-6" onSubmit={handleOtpSubmit}>
-              <h2 className="text-3xl font-extrabold text-center mb-4 text-blue-800">Enter OTP</h2>
-              <input
-                type="text"
-                name="otp"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                className="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-600 transition-shadow"
-                required
-              />
-              <button
-                type="submit"
-                className="w-full py-3 text-lg font-semibold text-white bg-blue-800 rounded-lg shadow-md hover:bg-blue-900 transition-colors"
-              >
-                VERIFY OTP
               </button>
             </form>
           )}
