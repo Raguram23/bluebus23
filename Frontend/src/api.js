@@ -1,0 +1,4 @@
+// Centralized API base for frontend
+const API = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+
+export default API;
