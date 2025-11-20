@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API from '../../../api';
 
 const AddBusForm = () => {
     const [formData, setFormData] = useState({
@@ -106,7 +107,6 @@ selectDayOrNight(formData.Source_time)
     const [alert, setAlert] = useState({ message: '', type: '', countdown: 5 });
     const [countdown, setCountdown] = useState(5);
 
-    import API from '../../../api';
     const token = localStorage.getItem('token');
     const api = axios.create({ baseURL: API, headers: token ? { 'x-access-token': token } : {} });
     // if (formData.Seat_price < 0) {
