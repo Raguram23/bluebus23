@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+// Prisma model for buses (mirrors existing add_bus schema)
+model Bus {
+  id               Int      @id @default(autoincrement())
+  Bus_number       String   @unique
+  Bus_name         String
+  Number_seat      Int
+  Seat_price       Int
+  Source           String
+  Source_time      String
+  Destination      String
+  Destination_time String
+  Bus_type         String
+  Bus_Class        String
+  Timing           String
+  Food_Facility    String
+  createdAt        DateTime @default(now())
+}

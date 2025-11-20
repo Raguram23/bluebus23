@@ -54,3 +54,5 @@ pids/
 
 # Windows image file cache
 ehthumbs.db
+// Prisma DB (local dev)
+/Server/prisma/dev.db
