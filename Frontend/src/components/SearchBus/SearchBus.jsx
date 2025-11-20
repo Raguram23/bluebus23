@@ -4,14 +4,10 @@ import FilterOptions from './BusFilter';
 import BusCard from './BusCard'
 import axios from 'axios';
 import { useSelector } from 'react-redux';
+import API from '../../api';
 
-const token = localStorage.getItem("token");
-
-// Use local backend during development
-const api = axios.create({
-  baseURL: 'http://localhost:8080',
-  headers: token ? { 'x-access-token': token } : {},
-});
+const token = localStorage.getItem('token');
+const api = axios.create({ baseURL: API, headers: token ? { 'x-access-token': token } : {} });
 
 function BusResultsPage() {
   const Source = useSelector(state => state.filter.source);

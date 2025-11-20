@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import API from '../../api';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { login } from '../../Features/Slice';
@@ -72,12 +73,12 @@ export default function Register() {
 
     try {
       // Register user on backend
-      const registerResp = await axios.post('http://localhost:8080/register', register);
+      const registerResp = await axios.post(`${API}/register`, register);
       setAlert({ message: registerResp.data.Message || 'Registration successful', type: 'success', countdown: 5 });
 
       // Auto-login after successful registration
       try {
-        const loginResp = await axios.post('http://localhost:8080/login', {
+        const loginResp = await axios.post(`${API}/login`, {
           email: register.email,
           password: register.password,
         });
@@ -127,7 +128,7 @@ export default function Register() {
     }
 
     try {
-      const response = await axios.post('http://localhost:8080/login', {
+      const response = await axios.post(`${API}/login`, {
         email: loginEmail,
         password: loginPassword,
       });

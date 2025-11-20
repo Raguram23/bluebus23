@@ -106,13 +106,9 @@ selectDayOrNight(formData.Source_time)
     const [alert, setAlert] = useState({ message: '', type: '', countdown: 5 });
     const [countdown, setCountdown] = useState(5);
 
+    import API from '../../../api';
     const token = localStorage.getItem('token');
-    const api = axios.create({
-        baseURL: 'http://localhost:8080',
-        headers: {
-            'x-access-token': token,
-        },
-    });
+    const api = axios.create({ baseURL: API, headers: token ? { 'x-access-token': token } : {} });
     // if (formData.Seat_price < 0) {
     //     setAlert({ message: "Seat price cannot be negative", type: 'error', countdown: 5 });
     //     return; // Stop submission if seat price is invalid
