@@ -1,0 +1,8 @@
+{
+  "name": "bluebus23-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd Frontend && npm ci && npm run build"
+  }
+}
